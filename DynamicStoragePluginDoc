@@ -1,0 +1,79 @@
+Dynamic Storage System (v1.0.0)
+Advanced Data Management for Unreal Engine 5.7+
+
+1. Overview
+The Dynamic Storage System is a high-performance C++ plugin designed to eliminate the friction of data handling in Blueprints. By leveraging custom K2Nodes, this plugin allows developers to store and retrieve various data types through a unified "Wildcard" interface, removing the need for repetitive casting and complex variable management.
+
+2. Key Features
+Wildcard Property Support: "Get" and "Set" nodes automatically adapt to the data type connected to them.
+
+Zero-Boilerplate Logic: Reduces the need for manual casting and large "Switch on Type" structures.
+
+Modular Architecture: Separated into Runtime and Editor modules to ensure clean packaging and optimized builds.
+
+Native Feel: The nodes are designed to look and behave like standard Unreal Engine 5 nodes, including context-sensitive pinning.
+
+3. Installation
+Download the plugin ZIP file.
+
+Navigate to your project root folder (e.g., D:/projects/Project5/).
+
+Create a folder named Plugins if it doesn't already exist.
+
+Extract the DynamicStorage folder into the Plugins directory.
+
+Restart Unreal Engine.
+
+Ensure GameplayTags is enabled in the Plugin Browser (Project Requirement).
+
+4. How to Use
+A. The "Set Dynamic Value" Node
+This node allows you to pass any variable into the storage system.
+
+Right-click in the Blueprint Graph and search for "Set Dynamic Value".
+
+Connect your variable to the Value pin. The node will automatically identify the property type.
+
+Provide a Key (Name/GameplayTag) to identify the data later.
+
+B. The "Get Dynamic Value" Node
+Retrieves stored data using a Key.
+
+Place the "Get Dynamic Value" node.
+
+Connect the output pin to your target variable. The pin will change color/type to match the target.
+
+The node handles the internal memory routing to provide the correct value instantly.
+
+5. Technical Specifications
+Module Structure
+DynamicStorage (Runtime): Handles the back-end data containers and memory management.
+
+DynamicStorageEditor (UncookedOnly): Contains the K2Node logic, pin visualizers, and compiler instructions.
+
+Supported Data Types
+Primitive Types: Boolean, Byte, Integer, Int64, Float, Double.
+
+Common Structs: Vector, Rotator, Transform.
+
+Strings: FString, FName, FText.
+
+Objects: UObject references and Actor references.
+
+6. Developer Notes
+[!IMPORTANT]
+This plugin utilizes CustomThunk functions for high-speed data passing. While these functions are exposed to the engine, they are marked with BlueprintInternalUseOnly to prevent them from cluttering the Blueprint search menu. Always use the K2Nodes provided in the "Dynamic Storage" category.
+
+7. Troubleshooting
+Missing Nodes: Ensure the DynamicStorageEditor module is listed in your .uplugin file.
+
+Linker Errors: If compiling from source, make sure you have included DYNAMICSTORAGE_API in your header classes.
+
+Global Shader Error: If you encounter a shader library error after renaming the project, switch your build configuration to Development Editor in Visual Studio and rebuild.
+
+Support & License
+Author: Sushant Chahar
+
+Support: [Insert Your Portfolio/Email Link]
+
+Compatibility: Unreal Engine 5.7.3+
