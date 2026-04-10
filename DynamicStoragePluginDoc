@@ -18,22 +18,23 @@ Confirm: Now, whenever you select a correct/valid tag and if it exist in storage
 Note:- Here, we don't need to physically wire the tag pin. Only need to physically wire the in/value pin in Set Storage node
 And the in/value pin and outpin of Set Storage and Get Storage nodes respectively should not be wildcard otherwise it will throw the warning and the system will not work
 
-Work system in C++
+C++ Implementation
 1. Add a "DynamicStorage" dependency in project.build.cs
-2. include a header "DynamicStorageRuntimeLibrary"
+2. include a header "DynamicStorageRuntimeLibrary.h"
 3. include a header for gameplaytag also named "GameplayTagContainer.h"
-3. Use DynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
-4. Use DynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
+3. Use UDynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
+4. Use UDynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
 
 Note:- This system works on runtime only
 
-For Example:- Setting a float variable and SkeletalMesjh
+For Example:- Setting a float variable and SkeletalMeshComponent
+// Cache the values in storage
 DynamicStorageRuntimeLibrary::SetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"), 95.5f);
 DynamicStorageRuntimeLibrary::SetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"), this->GetMesh());
 
 Note:- Here this means ACharacter class actor.
 
-// Now get the stored values
+// Retrieve the values from storage
 float FloatVal = DynamicStorageRuntimeLibrary::GetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"));
 USkeletalMeshComponent* SMCVal = DynamicStorageRuntimeLibrary::GetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"));
 
