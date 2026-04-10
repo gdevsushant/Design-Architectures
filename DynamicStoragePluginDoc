@@ -6,17 +6,44 @@ Follow these steps to verify functionality in under 2 minutes:
 
 Requirements: Ensure the Dynamic Storage and GameplayTags plugins are enabled in Edit > Plugins.
 
-Set Data: In any Actor/Animation Blueprint, add a Set Dynamic Value node. Connect an "Integer" variable to the Value pin and enter MyTestKey in the Key field.
+Set Data: In any Actor/Animation Blueprint, add a Set Storage node. Connect an "Integer" variable as an example to the Value/In pin and select Tag in the Tag field.
+Note:- Always remember while using Set Storage node that the In pin of value or data should be connected by a physical pin not directly set to the pin itself.
+For example:- Let suppose we are storing a float type value so rather than setting value direct to the pin, get a unreal engine Make Literal Float and connect that out pin to the Set Storage InPin
 
-Get Data: Add a Get Dynamic Value node elsewhere in the graph. Enter MyTestKey in the Key field.
+Get Data: Add a Get Storage node elsewhere in the graph. Select TagKey in the Tag field.
+Note:- The auto detect function for outpin of Get Storage node only works in blueprint and only when a Set Storage node is used.
 
-Confirm: Connect the Value output of the Get node to a Print String. The pin will automatically turn cyan. Compile and Play to see the stored value in your log.
+Confirm: Now, whenever you select a correct/valid tag and if it exist in storage, the pin will automatically turn according to data. You can use a print node to see the stored value in actual.Compile and Play to see the stored value on your screen.
+
+Note:- Here, we don't need to physically wire the tag pin. Only need to physically wire the in/value pin in Set Storage node
+And the in/value pin and outpin of Set Storage and Get Storage nodes respectively should not be wildcard otherwise it will throw the warning and the system will not work
+
+Work system in C++
+1. Add a "DynamicStorage" dependency in project.build.cs
+2. include a header "DynamicStorageRuntimeLibrary"
+3. include a header for gameplaytag also named "GameplayTagContainer.h"
+3. Use DynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
+4. Use DynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
+
+Note:- This system works on runtime only
+
+For Example:- Setting a float variable and SkeletalMesjh
+DynamicStorageRuntimeLibrary::SetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"), 95.5f);
+DynamicStorageRuntimeLibrary::SetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"), this->GetMesh());
+
+Note:- Here this means ACharacter class actor.
+
+// Now get the stored values
+float FloatVal = DynamicStorageRuntimeLibrary::GetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"));
+USkeletalMeshComponent* SMCVal = DynamicStorageRuntimeLibrary::GetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"));
+
+Note:- this will work only when "Test.float" and "Test.SkeletalMeshComponent" is valid/added in unreal engine GameplayTagContainer
 
 2. Overview
 The Dynamic Storage System is a high-performance C++ plugin that eliminates the need for repetitive casting and complex variable management in Blueprints. Using custom K2Nodes, it allows for seamless storage and retrieval of various data types through a unified "Wildcard" interface.
 
 3. Key Features
-Wildcard Property Support: "Get" and "Set" nodes automatically adapt to the connected data type.
+Wildcard Property Support: "Get Storage" and "Set Storage" nodes automatically adapt to the connected data type.
 
 Zero-Boilerplate Logic: Reduces the need for manual casting or large "Switch on Type" structures.
 
@@ -25,7 +52,7 @@ Modular Architecture: Features separate Runtime and UncookedOnly (Editor) module
 Native Integration: Designed to behave like native Unreal Engine nodes with context-sensitive pinning.
 
 4. Installation
-Navigate to fab and install it
+Navigate to fab and install it (When available on fab)
 
 5. Technical Specifications
 Module Structure
