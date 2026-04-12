@@ -42,14 +42,19 @@ USkeletalMeshComponent* SMCVal = DynamicStorageRuntimeLibrary::GetValue<USkeleta
 Note:- this will work only when "Test.float" and "Test.SkeletalMeshComponent" is valid/added in unreal engine GameplayTagContainer
 
 ANIM NOTIFIER IMPLEMENTATION
-1. Add a notify in the animation
-2. Click the notify
-3. Set the notify name to the notify and notify tag variable
+1. Add a notify in any animation
+2. Click the notify 
+3. Set the notify name to the notify and notify tag variable in details panel
 4. Set the storage tag
 5. Whether set true for storing the notify tag in the storage or set false to store false in the storage
 
 The anim notifier version make the system a bit easy because here we connect dynamic storage system with anim notifiers making it more loose coupled, versatile and direct use in anywhere without any hard, manual tracking
 Note:- If ShouldStoreToStorage is false, the value will stored as boolean and if true the value will stored as name where the name is notifytag name
+
+To check the anim notify version in working, then simply set ShouldStoreToStorage to true and go to any blueprint class, add a Get Storage node and select same tag and you will see that the output pin type of node changes to FName and if print it then it should print the same notifytag value
+If ShouldStoreToStorage sets to false then in Get Storage node, the output pin type will be bool and it should print false always
+
+Note:- It will execute when the animation is run whether in actual game or editor
 
 2. Overview
 The Dynamic Storage System is a high-performance C++ plugin that eliminates the need for repetitive casting and complex variable management in Blueprints. Using custom K2Nodes, it allows for seamless storage and retrieval of various data types through a unified "Wildcard" interface.
