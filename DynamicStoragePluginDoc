@@ -21,9 +21,10 @@ And the in/value pin and outpin of Set Storage and Get Storage nodes respectivel
 C++ Implementation
 1. Add a "DynamicStorage" dependency in project.build.cs
 2. include a header "DynamicStorageRuntimeLibrary.h"
-3. include a header for gameplaytag also named "GameplayTagContainer.h"
-3. Use UDynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
-4. Use UDynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
+3. include a header "DynamicStorageEditorDynamicDataStructure.h"
+4. include a header for gameplaytag also named "GameplayTagContainer.h"
+5. Use UDynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
+6. Use UDynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
 
 Note:- This system works on runtime only
 
