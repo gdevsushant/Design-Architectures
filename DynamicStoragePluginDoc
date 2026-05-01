@@ -1,96 +1,416 @@
-Dynamic Storage System (v1.0.0)
-Advanced Data Management for Unreal Engine 5.7+ Copyright © 2026 Sushant Chahar. All Rights Reserved.
+Dynamic Storage System — User Guide
 
-1. Quick Start Guide
-Follow these steps to verify functionality in under 2 minutes:
+1. What is Dynamic Storage System?
 
-Requirements: Ensure the Dynamic Storage and GameplayTags plugins are enabled in Edit > Plugins.
+Dynamic Storage System is an Unreal Engine plugin that lets you store and retrieve runtime data using Gameplay Tags.
 
-Set Data: In any Actor/Animation Blueprint, add a Set Storage node. Connect an "Integer" variable as an example to the Value/In pin and select Tag in the Tag field.
-Note:- Always remember while using Set Storage node that the In pin of value or data should be connected by a physical pin not directly set to the pin itself.
-For example:- Let suppose we are storing a float type value so rather than setting value direct to the pin, get a unreal engine Make Literal Float and connect that out pin to the Set Storage InPin
+Instead of creating many separate variables across different Blueprints or C++ classes, you can save a value with a tag and read it later from another system.
 
-Get Data: Add a Get Storage node elsewhere in the graph. Select TagKey in the Tag field.
-Note:- The auto detect function for outpin of Get Storage node only works in blueprint and only when a Set Storage node is used.
+Example idea:
 
-Confirm: Now, whenever you select a correct/valid tag and if it exist in storage, the pin will automatically turn according to data. You can use a print node to see the stored value in actual.Compile and Play to see the stored value on your screen.
+Player.Health → 100
+Weapon.CurrentAmmo → 30
+Input.MouseLocation → Vector2D
+AI.TargetActor → Actor Reference
 
-Note:- Here, we don't need to physically wire the tag pin. Only need to physically wire the in/value pin in Set Storage node
-And the in/value pin and outpin of Set Storage and Get Storage nodes respectively should not be wildcard otherwise it will throw the warning and the system will not work
+The plugin works in both Blueprint and C++.
 
-C++ Implementation
-1. Add a "DynamicStorage" dependency in project.build.cs
-2. include a header "DynamicStorageRuntimeLibrary.h"
-3. include a header "DynamicStorageEditorDynamicDataStructure.h"
-4. include a header for gameplaytag also named "GameplayTagContainer.h"
-5. Use UDynamicStorageRuntimeLibrary::SetValue<T>(FGameplayTag, Value); // syntax
-6. Use UDynamicStorageRuntimeLibrary::GetValue<T>(FGameplayTag); // syntax
 
-Note:- This system works on runtime only
+---
 
-For Example:- Setting a float variable and SkeletalMeshComponent
-// Cache the values in storage
-DynamicStorageRuntimeLibrary::SetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"), 95.5f);
-DynamicStorageRuntimeLibrary::SetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"), this->GetMesh());
+2. Main Features
 
-Note:- Here this means ACharacter class actor.
+Store data using Gameplay Tags
 
-// Retrieve the values from storage
-float FloatVal = DynamicStorageRuntimeLibrary::GetValue<float>(FGameplayTag::RequestGameplayTag(FName("Test.float"));
-USkeletalMeshComponent* SMCVal = DynamicStorageRuntimeLibrary::GetValue<USkeletalMeshComponent>(FGameplayTag::RequestGameplayTag(FName("Test.SkeletalMeshComponent"));
+Retrieve data using Gameplay Tags
 
-Note:- this will work only when "Test.float" and "Test.SkeletalMeshComponent" is valid/added in unreal engine GameplayTagContainer
+Check if data exists
 
-ANIM NOTIFIER IMPLEMENTATION
-1. Add a notify in any animation
-2. Click the notify 
-3. Set the notify name to the notify and notify tag variable in details panel
-4. Set the storage tag
-5. Whether set true for storing the notify tag in the storage or set false to store false in the storage
+Remove stored data
 
-The anim notifier version make the system a bit easy because here we connect dynamic storage system with anim notifiers making it more loose coupled, versatile and direct use in anywhere without any hard, manual tracking
-Note:- If ShouldStoreToStorage is false, the value will stored as boolean and if true the value will stored as name where the name is notifytag name
+Works in Blueprint
 
-To check the anim notify version in working, then simply set ShouldStoreToStorage to true and go to any blueprint class, add a Get Storage node and select same tag and you will see that the output pin type of node changes to FName and if print it then it should print the same notifytag value
-If ShouldStoreToStorage sets to false then in Get Storage node, the output pin type will be bool and it should print false always
+Works in C++
 
-Note:- It will execute when the animation is run whether in actual game or editor
+Type-safe storage and retrieval
 
-2. Overview
-The Dynamic Storage System is a high-performance C++ plugin that eliminates the need for repetitive casting and complex variable management in Blueprints. Using custom K2Nodes, it allows for seamless storage and retrieval of various data types through a unified "Wildcard" interface.
+Supports common Unreal Engine types
 
-3. Key Features
-Wildcard Property Support: "Get Storage" and "Set Storage" nodes automatically adapt to the connected data type.
+Supports arrays, sets, and maps
 
-Zero-Boilerplate Logic: Reduces the need for manual casting or large "Switch on Type" structures.
+Automatically rebuilds Blueprint pin types from stored metadata
 
-Modular Architecture: Features separate Runtime and UncookedOnly (Editor) modules for optimized packaging.
 
-Native Integration: Designed to behave like native Unreal Engine nodes with context-sensitive pinning.
 
-4. Installation
-Navigate to fab and install it (When available on fab)
+---
 
-5. Technical Specifications
-Module Structure
-DynamicStorage (Runtime): Handles core data containers and memory management.
+3. Basic Rule
 
-DynamicStorageEditor (UncookedOnly): Contains K2Node logic and compiler instructions.
+The type used for retrieval must match the type used for storage.
 
-Supported Data Types
-Primitives: Boolean, Byte, Integer, Int64, Float, Double.
+Correct:
 
-Common Structs: Vector, Rotator, Transform.
+Store Player.Health as int
+Get Player.Health as int
 
-Strings: FString, FName, FText.
+Incorrect:
 
-Objects: UObject and Actor references.
+Store Player.Health as int
+Get Player.Health as float
 
-Enums: Custom, Unreal built-in
+If the type does not match, the plugin safely blocks the retrieval and returns a default value.
 
-6. Troubleshooting
-Missing Nodes: Verify that the DynamicStorageEditor module is included in your .uplugin file.
 
-Author: Sushant Chahar
+---
 
-Compatibility: Unreal Engine 5.7.3+
+4. Blueprint Usage
+
+The plugin provides four main Blueprint nodes:
+
+Set Storage
+Get Storage
+Contain Data
+Unregister Data
+
+
+---
+
+4.1 Set Storage
+
+Use Set Storage to save a value.
+
+Steps:
+
+1. Add a Set Storage node.
+
+
+2. Select a Gameplay Tag.
+
+
+3. Connect a value to the Value pin.
+
+
+4. Compile the Blueprint.
+
+
+
+Example:
+
+Tag: Player.Health
+Value: 100
+
+This stores the integer value 100 under the tag Player.Health.
+
+The Value pin automatically changes to the connected value type.
+
+
+---
+
+4.2 Get Storage
+
+Use Get Storage to read a value.
+
+Steps:
+
+1. Add a Get Storage node.
+
+
+2. Select the same Gameplay Tag used in Set Storage.
+
+
+3. The output pin automatically becomes the correct type.
+
+
+4. Use the output value normally.
+
+
+
+Example:
+
+Tag: Player.Health
+Output: int
+
+Important:
+
+Get Storage should use a fixed Gameplay Tag or Make Literal Gameplay Tag.
+
+Dynamic tag variables are not recommended for Get Storage because Blueprint output pins need a known type before compile time.
+
+
+---
+
+4.3 Contain Data
+
+Use Contain Data to check if a tag currently has stored data.
+
+Example flow:
+
+Contain Data → Branch → Get Storage
+
+This is useful when the value may or may not exist yet.
+
+
+---
+
+4.4 Unregister Data
+
+Use Unregister Data to remove data from storage.
+
+Example:
+
+Unregister Data: Player.Health
+
+After removal, Contain Data for that tag returns false.
+
+
+---
+
+5. C++ Implementation
+
+Include the API header:
+
+#include "API/DynamicStorageSystemAPI.h"
+
+
+---
+
+5.1 Register Data
+
+UDynamicStorageSystemAPI::RegisterData<int32>(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Player.Health")),
+    100
+);
+
+
+---
+
+5.2 Retrieve Data
+
+int32 Health = UDynamicStorageSystemAPI::RetrieveData<int32>(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Player.Health"))
+);
+
+
+---
+
+5.3 Check if Data Exists
+
+bool bExists = UDynamicStorageSystemAPI::ContainsData(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Player.Health"))
+);
+
+
+---
+
+5.4 Remove Data
+
+bool bRemoved = UDynamicStorageSystemAPI::UnregisterData(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Player.Health"))
+);
+
+
+---
+
+6. Supported Types
+
+The plugin supports common Unreal Engine types.
+
+Basic Types
+
+bool
+int32
+int64
+float
+double
+
+Text Types
+
+String
+Name
+Text
+
+C++ equivalents:
+
+FString
+FName
+FText
+
+Math Types
+
+Vector
+Vector2D
+Rotator
+Transform
+
+C++ equivalents:
+
+FVector
+FVector2D
+FRotator
+FTransform
+
+Other Supported Types
+
+Enums
+Structs
+Object references
+Class references
+Arrays
+Sets
+Maps
+
+Example container types:
+
+Array<int>
+Array<Vector>
+Set<string>
+Map<Name, int>
+Map<String, Vector>
+Map<Name, CustomStruct>
+
+Core C++ types (Unsupported by blueprint)
+This system also supports c++ core types which are not supported by the blueprints. i.e Non-USTRUCT() structs, Non-UCLASS() classes, NON-UPROPERTY() variables
+
+Note:- The c++ core types does not support the blueprint so the blueprint will not react with these types of data but can be used in c++.
+
+NOTE:- DON'T STORE POINTERS OF BASIC TYPES LIKE INT, FLOAT, BOOL, STRING, NAME, ETC...
+NOTE:- ALLOWED POINTERS TYPE VALUES = UOBJECT, CLASS
+
+
+---
+
+7. Gameplay Tag Examples
+
+Recommended tag names:
+
+Player.Health
+Player.Stamina
+Weapon.CurrentAmmo
+Weapon.RuntimeData
+Input.Action.Move
+Input.Action.MouseLocation
+AI.TargetActor
+Quest.ActiveObjective
+
+A good naming style is:
+
+System.Category.Name
+
+Examples:
+
+Player.Stat.Health
+Weapon.Data.CurrentAmmo
+Input.Action.MouseLocation
+AI.Target.CurrentActor
+
+
+---
+
+8. Common Examples
+
+Store Player Health
+
+Blueprint:
+
+Set Storage
+Tag: Player.Health
+Value: 100
+
+C++:
+
+UDynamicStorageSystemAPI::RegisterData<int32>(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Player.Health")),
+    100
+);
+
+
+---
+
+Store Mouse Location
+
+Recommended type:
+
+Vector2D
+
+Example tag:
+
+Input.Action.MouseLocation
+
+
+---
+
+Store Current Ammo
+
+Recommended type:
+
+int
+
+Example tag:
+
+Weapon.CurrentAmmo
+
+
+---
+
+Store Target Actor
+
+Recommended type:
+
+Actor Reference
+
+Example tag:
+
+AI.TargetActor
+
+
+---
+
+9. Enhanced Input Recommendation
+
+For Enhanced Input, store the actual value inside the input action value, not the InputActionValue wrapper itself.
+
+Recommended mapping:
+
+Boolean input  → bool
+Axis1D input   → float
+Axis2D input   → Vector2D
+Axis3D input   → Vector
+
+Example:
+
+FVector2D MoveValue = Value.Get<FVector2D>();
+
+UDynamicStorageSystemAPI::RegisterData<FVector2D>(
+    this,
+    FGameplayTag::RequestGameplayTag(TEXT("Input.Action.Move")),
+    MoveValue
+);
+
+
+---
+
+10. World Context
+
+The plugin needs a valid world context object.
+
+It works normally inside:
+
+Actor Blueprint
+Actor Component Blueprint
+Pawn Blueprint
+Character Blueprint
+Widget Blueprint
+Player Controller Blueprint
+
+If using it from a Blueprint that does not have a valid world, pass a valid context object such as:
+
+Actor
+Actor Component
+Player Controller
+Game Instance
+Widget
